@@ -1,0 +1,6 @@
+---
+- name: Deploy Charts
+  hosts: all
+  gather_facts: true
+  roles:
+    - operator-prometheus

@@ -1,0 +1,101 @@
+
+kubergrunt_output_dir: .tmp
+delete_tiller_namespaces: "true"
+delete_resource_namespaces: "true"
+helm_home: ''
+kubeconfig: ''
+kubectl_server_endpoint: ''
+kubectl_token: ''
+kubectl_certificate_authority: ''
+kubectl_context_name: 'minikube'
+tiller_image: gcr.io/kubernetes-helm/tiller
+tiller_version: v2.16.3
+wait_for_tiller: "true"
+wait_for_tiller_timeout: 5m
+wait_for_tiller_sleep_between_retries: 0.5s
+undeploy_force: 'true'
+undeploy_releases: 'false'
+tiller_configs:
+    # - kind: User
+    #   name: minikube
+    # - kind: Group
+    #   name: developers
+    # - kind: ServiceAccount
+    #   name: admin    
+    - tiller_namespace: cert-manager-tiller
+      resource_namespace: cert-manager
+      helm_user_for_undeploy_tiller:
+        kind: User
+        name: minikube
+      grants:
+        - kind: User
+          name: minikube
+    - tiller_namespace: external-dns-tiller
+      resource_namespace: external-dns
+      helm_user_for_undeploy_tiller:
+        kind: User
+        name: minikube
+      grants:
+        - kind: User
+          name: minikube
+    - tiller_namespace: monitoring-tiller
+      resource_namespace: monitoring
+      helm_user_for_undeploy_tiller:
+        kind: User
+        name: minikube
+      grants:
+        - kind: User
+          name: minikube
+    - tiller_namespace: rook-tiller
+      resource_namespace: rook
+      helm_user_for_undeploy_tiller:
+        kind: User
+        name: minikube
+      grants:
+        - kind: User
+          name: minikube
+    - tiller_namespace: crunchy-data-postgres-tiller
+      resource_namespace: crunchy-data-postgres
+      helm_user_for_undeploy_tiller:
+        kind: User
+        name: minikube
+      grants:
+        - kind: User
+          name: minikube
+    - tiller_namespace: redis-tiller
+      resource_namespace: redis
+      helm_user_for_undeploy_tiller:
+        kind: User
+        name: minikube
+      grants:
+        - kind: User
+          name: minikube
+    - tiller_namespace: gitlab-tiller
+      resource_namespace: gitlab
+      service_account: sa-tiller-gitlab
+      custom_rbac_file: custom_rbac.yaml
+      helm_user_for_undeploy_tiller:
+        kind: User
+        name: minikube
+      grants:
+        - kind: User
+          name: minikube
+
+tls_common_name: 'Tiller-Server'
+tls_org: 'hikers.io'
+tls_org_unit: 'IT'
+tls_city: 'Recife'
+tls_state: 'PE'
+tls_country: 'BR'
+tls_validity: ''
+tls_private_key_algorithm: 'RSA' 
+tls_private_key_ecdsa_curve: ''
+tls_private_key_rsa_bits: '4096'
+
+
+client_tls_common_name: 'Tiller-Client'
+client_tls_org: 'hikers.io'
+client_tls_org_unit: 'IT'
+client_tls_city: 'Recife'
+client_tls_state: 'PE'
+client_tls_country: 'BR'

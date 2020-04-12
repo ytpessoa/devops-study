@@ -1,0 +1,41 @@
+# Um container
+
+# image: nomeRegistro/namespaceRepositorio/repositorioImagem:tag
+
+---
+spec:   
+  containers:
+  #######################
+  #   Container 1       #
+  #######################
+  - name: container2
+    image: cloudnatived/demo:hello
+    env: #sobrescreve as variáveis de ambiente do Dockerfile
+      - name: GREETING
+        value: "hello from the enviroment from container 1"
+    # segurança em nível de conteiner:
+    securityContext:
+      runAsUser: 1000 # UID(Numerical User Identifier) do Linux para o primeiro usuário criado que não seja root
+      runAsNonRoot: true #não executar container como root
+      readOnlyRootFilesystem: true #nao escrever no sistema de arquivo do host
+      allowPrivilegeEscalation: false # desativando execucao como root se um binario tiver "setuid" configurado
+      capabilities:
+        #drop: ["CHOWN", "NET_RAW", "SETCAP"]
+        drop: ["all"]
+        add: ["NET_BIND_SERVICE"]
+  
+  #######################
+  #   Container 2       #
+  #######################  
+  - name: container2
+    image: cloudnatived/demo:hello
+    env:
+      - name: GREETING
+        value: "hello from the enviroment from container 1"
+    securityContext:
+      runAsUser: 1000 # mesmo UID para ambos acessarem um volume montada, por exemplo.
+    
+    ports: 
+    - containerPort: 8888
+#fim Spec
+...

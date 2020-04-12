@@ -1,0 +1,7 @@
+#localhost ansible_connection=local ansible_python_interpreter="/usr/bin/python"
+#executable = /bin/bash 
+
+[localhost]
+localhost  ansible_connection=local
+
+#http_port: 110

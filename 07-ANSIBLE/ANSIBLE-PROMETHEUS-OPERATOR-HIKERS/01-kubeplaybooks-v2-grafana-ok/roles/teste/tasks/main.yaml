@@ -1,0 +1,29 @@
+# - name: Print http_port
+#   debug:
+#     msg: "{{ http_port }}"
+
+- name: Set output directory fact
+  set_fact:
+    kubergrunt_helm_output_dir: "{{ kubergrunt_output_dir }}/{{role_path|basename}}"
+  tags: always
+
+- name: Clean output directory
+  file:
+    path: "{{ kubergrunt_helm_output_dir }}"
+    state: absent
+    mode: 0700
+  tags: ['never', 'install-kubergrunt']
+
+- name: Create output directory
+  file:
+    path: "{{ kubergrunt_helm_output_dir }}"
+    state: directory
+    mode: 0700
+  tags: always
+
+- name: Setup Default Tiller RBAC
+  register: kubergrunt_rbac_manifests
+  template:
+    src: values.yaml.j2
+    dest: "{{ kubergrunt_helm_output_dir }}/values.yaml"
+  tags: always

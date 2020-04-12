@@ -1,0 +1,26 @@
+
+
+# Segurança em nível de Cluster
+
+
+
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: example
+spec:
+  privileged: false
+  # o restante serve para preecher alguns campos necessarios
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  runUser:
+    rule: RunAsAny
+  fsgroup:
+    rule: RunAsAny
+  volumes:
+
+  #depois criar as políticas, conceder às contas de serviço relevantes o acesso às políticas por meio do RBAC.
+...

@@ -1,0 +1,25 @@
+
+
+---
+apiVersion: v1
+kind: Pod
+#...
+spec: 
+  
+  volumes:
+  - name: data-volume #volume compartilhado por container neste Pod 
+    persistentVolumeClaim: #persistência enquanto Pod executando
+      claimName: data-pvc
+  
+  containers:
+  - name: demo
+    image: cloudnatived/demo:hello
+    volumeMounts:
+    - mountPath: /cache
+      name: cache-volume #volume criado
+
+
+
+
+
+...

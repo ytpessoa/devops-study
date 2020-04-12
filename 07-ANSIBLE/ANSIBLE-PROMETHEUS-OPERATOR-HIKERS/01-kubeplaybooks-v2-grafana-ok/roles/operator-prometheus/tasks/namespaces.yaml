@@ -1,0 +1,18 @@
+---
+# Monitoring Namespaces
+- name: Get monitoring namespace
+  shell: "kubectl get namespace {{ monitoring_namespace }}"
+  register: monitoring_namespace_details
+  ignore_errors: yes
+  tags: always
+
+- name: Create monitoring namespace
+  shell: "kubectl create namespace {{ monitoring_namespace }}"
+  when: monitoring_namespace_details.rc != 0
+  tags: ['never', 'install-monitoring']
+
+- name: Delete monitoring Namespaces
+  shell: "kubectl delete namespace {{ monitoring_namespace }}"
+  ignore_errors: yes
+  when: monitoring_namespace_details.rc == 0 and delete_monitoring_namespace|bool
+  tags: ['never', 'uninstall-monitoring']

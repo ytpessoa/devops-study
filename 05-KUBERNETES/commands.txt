@@ -1,0 +1,47 @@
+kubectl config current-context
+
+
+
+
+
+kubectl get rolebinding -n redis
+kubectl edit role role-tiller-redis-tiller -n redis-tiller
+kubesudo "redis-tiller:service-account-redis-tiller" get secrets -n redis-tiller
+kubectl describe role role-tiller-redis-tiller -n redis-tiller
+kubectl get describe role-tiller-redis-tiller -n redis-tiller
+
+
+kubectl delete secret $(kubectl get secrets -n kube-system | grep tiller | awk '{print $1}') -n kube-system
+
+
+$ kubectl get role -n redis-tiller
+minikube-redis-tiller-tiller-access   35h
+role-tiller-redis-tiller              35h
+
+$ kubectl get role -n redis
+role-tiller-redis   35h
+
+$ kubectl get rolebinding -n redis
+
+
+
+
+
+Role:
+kubectl get role -n rook
+kubectl get role -n rook-tiller
+kubectl get rolebinding -n rook-tiller
+kubectl get rolebindings --all-namespaces
+
+kubectl delete ns gitlab-tiller
+
+
+Service Account:
+
+kubectl get sa -n gitlab-tiller
+
+
+
+
+
+vim ~/.kube/config

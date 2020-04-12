@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: demo2-resourcequota
+spec:
+  hard:
+    pods: "100" # limit of 100 Pods running in the namespace
+...
+
+
+# Apply to a specific namespace:
+  $ kubectl create ns demo #or  "kubectl apply -f 03-namespace.yaml"
+  #namespace/demo created
+  
+  $ kubectl apply -f 04-resourceQuato.yaml -n demo
+  # resourcequota/demo-resourcequota created
+  
+  kubectl get resourcequotas -n demo
+  # NAME                 AGE   REQUEST       LIMIT
+  # demo-resourcequota   13m   pods: 0/100   

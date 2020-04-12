@@ -1,0 +1,8 @@
+---
+- name: Deploy Charts
+  hosts: all
+  gather_facts: true
+  roles:
+    - teste
+  vars:
+    - http_port: 100

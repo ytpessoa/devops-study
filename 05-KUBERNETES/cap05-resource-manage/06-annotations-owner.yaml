@@ -1,0 +1,10 @@
+
+# Mais fácil identifcar recursos não usados no cluster  
+---
+apiVersion: extensions/v1beta1
+kind: Deployment 
+metadata:
+  name: my-brilliant-app
+  annotations:
+    example.com/owner: "Customer Apps Team" # team to be contacted
+...

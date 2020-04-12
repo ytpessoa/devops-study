@@ -1,0 +1,66 @@
+nameOverride: {{ nameOverride| to_nice_yaml }}
+kubeTargetVersionOverride: {{ kubeTargetVersionOverride| to_nice_yaml }}
+
+fullnameOverride: {{ fullnameOverride| to_nice_yaml }}
+
+commonLabels: 
+{{ commonLabels | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+defaultRules:
+{{ defaultRules | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+additionalPrometheusRules:
+{{ additionalPrometheusRules | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+global:
+{{ global| to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+alertmanager:
+{{ alertmanager | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+
+grafana:
+{{ grafana | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+kubelet:
+{{ kubelet | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+kubeControllerManager:
+{{ kubeControllerManager | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+coreDns:
+{{ coreDns | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+kubeDns:
+{{ kubeDns | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+kubeEtcd:
+{{ kubeEtcd | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+
+kubeScheduler:
+{{ kubeScheduler | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+
+kubeProxy:
+{{ kubeProxy | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+
+kubeStateMetrics:
+{{ kubeStateMetrics | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+
+kube-state-metrics:
+{{ kube_state_metrics | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+nodeExporter:
+{{ nodeExporter | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+prometheus-node-exporter:
+{{ prometheus_node_exporter | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+prometheusOperator:
+{{ prometheusOperator | to_json | from_json | to_nice_yaml | indent(2, first=True) }}
+
+prometheus:
+{{ prometheus | to_json | from_json | to_nice_yaml | indent(2, first=True) }}

@@ -1,0 +1,14 @@
+
+
+# Creating a namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo2 
+...
+
+
+kubectl apply -f 03-namespace.yaml 
+#or
+kubectl create ns demo2

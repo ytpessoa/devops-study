@@ -1,0 +1,71 @@
+---
+- name: Set output directory fact
+  set_fact:
+    kubergrunt_helm_output_dir: "{{ kubergrunt_output_dir }}/{{role_path|basename}}"
+  tags: always
+
+- name: Clean output directory
+  file:
+    path: "{{ kubergrunt_helm_output_dir }}"
+    state: absent
+    mode: 0700
+  tags: ['never', 'install-kubergrunt']
+
+- name: Create output directory
+  file:
+    path: "{{ kubergrunt_helm_output_dir }}"
+    state: directory
+    mode: 0700
+  tags: always
+
+- name: Setup Default Tiller RBAC
+  register: kubergrunt_rbac_manifests
+  template:
+    src: rbac_default.yaml.j2
+    dest: "{{ kubergrunt_helm_output_dir }}/rbac_{{ config.tiller_namespace }}.yaml"
+  vars:
+    tiller_namespace: "{{ config.tiller_namespace }}"
+    resource_namespace: "{{ config.resource_namespace }}"
+  when: config.custom_rbac_file|default('') == ''
+  with_items:
+    - "{{ tiller_configs }}"
+  loop_control:
+    loop_var: config
+  tags: always
+
+- name: Setup Custom Tiller RBAC
+  register: kubergrunt_rbac_manifests
+  copy:
+    src: "{{ role_path }}/files/{{ config.custom_rbac_file }}"
+    dest: "{{ kubergrunt_helm_output_dir }}/rbac_{{ config.tiller_namespace }}.yaml"
+  when: config.custom_rbac_file|default('') != ''
+  with_items:
+    - "{{ tiller_configs }}"
+  loop_control:
+    loop_var: config
+  tags: always
+
+- name: Creating Kubergrunt RBAC
+  shell: "kubectl apply -f {{ rbac_manifest }}"
+  with_fileglob:
+    - "{{ kubergrunt_helm_output_dir }}/*.yaml"
+  loop_control:
+    loop_var: rbac_manifest
+  tags: ['never', 'install-kubergrunt']
+
+- name: Deleting Kubergrunt RBAC
+  debug:
+    msg: "kubectl delete -f {{ rbac_manifest }}"
+  ignore_errors: yes
+  with_fileglob:
+    - "{{ kubergrunt_helm_output_dir }}/*.yaml"
+  loop_control:
+    loop_var: rbac_manifest
+  tags: ['never', 'uninstall-kubergrunt']
+
+# - name: Clean output directory
+#   file:
+#     path: "{{ kubergrunt_helm_output_dir }}"
+#     state: absent
+#     mode: 0700
+#   tags: ['never', 'uninstall-kubergrunt']

@@ -1,0 +1,60 @@
+---
+# Helm Tiller Namespaces
+- name: Get Tiller Namespaces Details
+  shell: "kubectl get namespace {{ config.tiller_namespace }}"
+  register: tiller_namespaces_details
+  ignore_errors: yes
+  with_items:
+    - "{{ tiller_configs }}"
+  loop_control:
+    loop_var: config
+  tags: always
+
+- name: Create Tiller Namespaces
+  shell: "kubectl create namespace {{ result.config.tiller_namespace }}"
+  when: result.rc != 0
+  with_items:
+    - "{{ tiller_namespaces_details.results }}"
+  loop_control:
+    loop_var: result
+  tags: ['never', 'install-kubergrunt']
+
+- name: Delete Tiller Namespaces
+  shell: "kubectl delete namespace {{ result.config.tiller_namespace }}"
+  ignore_errors: yes
+  when: result.rc == 0 and delete_tiller_namespaces|bool
+  with_items:
+    - "{{ tiller_namespaces_details.results }}"
+  loop_control:
+    loop_var: result
+  tags: ['never', 'uninstall-kubergrunt']
+
+# Helm Resources Namespaces
+- name: Get Resource Namespace Details
+  shell: "kubectl get namespace {{ config.resource_namespace }}"
+  register: resource_namespaces_details
+  ignore_errors: yes
+  with_items:
+    - "{{ tiller_configs }}"
+  loop_control:
+    loop_var: config
+  tags: always
+
+- name: Create Resource Namespaces
+  shell: "kubectl create namespace {{ result.config.resource_namespace }}"
+  when: result.rc != 0
+  with_items:
+    - "{{ resource_namespaces_details.results }}"
+  loop_control:
+    loop_var: result
+  tags: ['never', 'install-kubergrunt']
+
+- name: Delete Resource Namespaces
+  shell: "kubectl delete namespace {{ result.config.resource_namespace }}"
+  ignore_errors: yes
+  when: result.rc == 0 and delete_resource_namespaces|bool
+  with_items:
+    - "{{ resource_namespaces_details.results }}"
+  loop_control:
+    loop_var: result
+  tags: ['never', 'uninstall-kubergrunt']

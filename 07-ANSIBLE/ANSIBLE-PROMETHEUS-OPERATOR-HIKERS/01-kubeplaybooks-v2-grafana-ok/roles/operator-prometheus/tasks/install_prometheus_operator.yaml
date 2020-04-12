@@ -1,0 +1,43 @@
+- name: Set output directory fact
+  set_fact:
+    monitoring_helm_output_dir: "{{ monitoring_output_dir }}/{{role_path|basename}}"
+  tags: always
+
+- name: Clean output directory
+  file:
+    path: "{{ monitoring_helm_output_dir }}"
+    state: absent
+    mode: 0700
+  tags: ['never', 'install-monitoring']
+
+- name: Create output directory
+  file:
+    path: "{{ monitoring_helm_output_dir }}"
+    state: directory
+    mode: 0700
+  tags: always
+
+- name: Setup values for monitoring prometheus-operator chart
+  template:
+    src: chart_values.yaml.j2
+    dest: "{{ monitoring_helm_output_dir }}/values.yaml"
+  tags: always
+
+- name: Install monitoring prometheus-operator chart
+  shell: >
+    helm install monitoring-prometheus-operator -f {{ monitoring_helm_output_dir }}/values.yaml -n {{ monitoring_namespace }} stable/prometheus-operator
+  tags: ['never', 'install-monitoring']
+
+- name: Uninstall monitoring prometheus-operator chart
+  ignore_errors: yes
+  shell: >
+    helm delete monitoring-prometheus-operator -n {{ monitoring_namespace }}
+    kubectl delete crd prometheuses.monitoring.coreos.com
+    kubectl delete crd prometheusrules.monitoring.coreos.com
+    kubectl delete crd servicemonitors.monitoring.coreos.com
+    kubectl delete crd podmonitors.monitoring.coreos.com
+    kubectl delete crd alertmanagers.monitoring.coreos.com
+    kubectl delete crd thanosrulers.monitoring.coreos.com
+
+  tags: ['never', 'uninstall-monitoring']
+

@@ -1,0 +1,95 @@
+---
+##########################################################
+# Check Always
+##########################################################
+- name: Check explicit kubeconfig
+  fail:
+    msg: "Please, for use explicit kubeconfig set together --kubectl-server-endpoint, --kubectl-certificate-authority and --kubectl-token"
+  when: >
+    (kubectl_server_endpoint|default('') != '' or
+    kubectl_token|default('') != '' or
+    kubectl_certificate_authority|default('') != '')
+    and
+    not (kubectl_server_endpoint|default('') != '' and
+    kubectl_token|default('') != '' and
+    kubectl_certificate_authority|default('') != '')
+  tags: always
+
+- name: 
+  set_fact:
+     use_kubeconfig: false
+  when: >
+    kubectl_server_endpoint|default('') != '' and
+    kubectl_token|default('') != '' and
+    kubectl_certificate_authority|default('') != ''
+  tags: always
+
+- name: 
+  set_fact:
+     use_kubeconfig: true
+  when: >
+    kubectl_server_endpoint|default('') == '' and
+    kubectl_token|default('') == '' and
+    kubectl_certificate_authority|default('') == ''
+  tags: always
+
+- name: Check if required variables has been defined in inventory file
+  fail:
+    msg: "Please specify the value of {{ item }} in your inventory file"
+  when: lookup('vars', item, default='') == ''
+  with_items:
+  - kubergrunt_output_dir
+  - tiller_configs
+  tags: always
+
+- name: Check if tiller_namespace and tiller_resource has been configured for each tiller config
+  fail:
+    msg: "Please, specify tiller_namespace and resource_namespace properly for each tiller config item"
+  when: item.tiller_namespace|default('') == '' or item.resource_namespace|default('') == ''
+  with_items:
+  - "{{ tiller_configs }}"
+  tags: always
+
+- name: Check if tiller_configs.grants has been configured properly for each tiller config items
+  fail:
+    msg: "Please, setup tiller_configs properly. Specify 'kind' and 'name' keys for each tiller config item"
+  when: config.1.kind|default('') == '' or config.1.name|default('') == ''
+  loop: "{{ tiller_configs|subelements('grants') }}"
+  loop_control:
+    loop_var: config
+  tags: always
+
+##########################################################
+# Check when install
+##########################################################
+- name: Check if kubergrunt deploy variables has been defined in inventory file
+  fail:
+    msg: "Please specify the value of {{ item }} in your inventory file"
+  when: lookup('vars', item, default='') == ''
+  with_items:
+  - wait_for_tiller
+  - tls_common_name
+  - client_tls_common_name
+  - client_tls_org
+  tags: ['never', 'install-kubergrunt']
+
+# ##########################################################
+# # Check variables for undeploy
+# ##########################################################
+
+- name: Check if kubergrunt undeploy variables has been defined in inventory file
+  fail:
+    msg: "Please specify the value of {{ item }} in your inventory file"
+  when: lookup('vars', item, default='') == ''
+  with_items:
+  - undeploy_force
+  - undeploy_releases
+  tags: ['never', 'uninstall-kubergrunt']
+
+- name: Check if at least tiller_namespace and tiller_resource has been configured
+  fail:
+    msg: "Please specify tiller_namespace and resource_namespace properly"
+  when: item.helm_user_for_undeploy_tiller.kind|default('') == '' and item.helm_user_for_undeploy_tiller.name|default('') == ''
+  with_items:
+  - "{{ tiller_configs }}"
+  tags: ['never', 'uninstall-kubergrunt']

@@ -1,0 +1,60 @@
+Lista de comandos:
+https://gist.github.com/leocomelli/2545add34e4fec21ec16
+
+1- Fazer cadastro no gitlab
+
+
+***VERSIONAMENTO DE CÓDIGO:
+a) Criar projeto em Gitlab
+-project: gilabci
+
+b) ter um client do git na maquina local
+
+c)Push an existing folder:
+-Dentro da raiz do projeto: ~/Desktop/DOCUSAUROS/missaodevops$ 
+git init
+git remote add origin https://gitlab.com/ytallopessoa/gilabci.git  // origin  = label
+git status
+git add .
+git status
+git commit -m "Initial commit"
+git push -u origin master // master = branch ; -u apenas na primeira vez
+
+
+
+Command line instructions
+
+You can also upload existing files from your computer using the instructions below.
+Git global setup
+
+git config --global user.name "Ytallo Gustavo Brito Pessoa"
+git config --global user.email "ytpessoa@gmail.com"
+
+Create a new repository
+
+git clone https://gitlab.com/commands1/commands.git
+cd commands
+touch README.md
+git add README.md
+git commit -m "add README"
+git push -u origin master
+
+Push an existing folder
+
+cd existing_folder
+git init
+git remote add origin https://gitlab.com/commands1/commands.git
+git add .
+git commit -m "Initial commit"
+git push -u origin master
+
+Push an existing Git repository
+
+cd existing_repo
+git remote rename origin old-origin
+git remote add origin https://gitlab.com/commands1/commands.git
+git push -u origin --all
+git push -u origin --tags
+
+
+

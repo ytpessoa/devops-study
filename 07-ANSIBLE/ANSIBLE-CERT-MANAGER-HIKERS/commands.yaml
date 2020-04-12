@@ -1,0 +1,63 @@
+
+
+***Configuração ANSIBLE
+
+
+***Versao do Kubernetes
+$ kubectl version
+Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.3", GitCommit:"06ad960bfd03b39c8310aaf92d1e7c12ce618213", GitTreeState:"clean", BuildDate:"2020-02-12T13:43:46Z", GoVersion:"go1.13.7", Compiler:"gc", Platform:"linux/amd64"}
+Server Version: version.Info{Major:"1", Minor:"14", GitVersion:"v1.14.0", GitCommit:"641856db18352033a0d96dbc99153fa3b27298e5", GitTreeState:"clean", BuildDate:"2019-03-25T15:45:25Z", GoVersion:"go1.12.1", Compiler:"gc", Platform:"linux/amd64"}
+
+*** Instalar jq
+
+*** Major e Miner do Server:
+$ kubectl version -o=json | jq ".serverVersion.major , .serverVersion.minor"
+# "1"
+# "14"
+
+kubectl version -o=json | jq ".serverVersion"
+{
+  "major": "1",
+  "minor": "14",
+  "gitVersion": "v1.14.0",
+  "gitCommit": "641856db18352033a0d96dbc99153fa3b27298e5",
+  "gitTreeState": "clean",
+  "buildDate": "2019-03-25T15:45:25Z",
+  "goVersion": "go1.12.1",
+  "compiler": "gc",
+  "platform": "linux/amd64"
+}
+
+
+{
+        "clientVersion": {
+            "buildDate": "2020-02-12T13:43:46Z", 
+            "compiler": "gc", 
+            "gitCommit": "06ad960bfd03b39c8310aaf92d1e7c12ce618213", 
+            "gitTreeState": "clean", 
+            "gitVersion": "v1.17.3", 
+            "goVersion": "go1.13.7", 
+            "major": "1", 
+            "minor": "17", 
+            "platform": "linux/amd64"
+        }, 
+        "serverVersion": {
+            "buildDate": "2019-03-25T15:45:25Z", 
+            "compiler": "gc", 
+            "gitCommit": "641856db18352033a0d96dbc99153fa3b27298e5", 
+            "gitTreeState": "clean", 
+            "gitVersion": "v1.14.0", 
+            "goVersion": "go1.12.1", 
+            "major": "1", 
+            "minor": "14", 
+            "platform": "linux/amd64"
+        }
+    }
+}
+
+
+
+
+Executando ANSIBLE:
+
+  ansible-playbook -i inventory.ini --tags=install-cert-manager playbook.yaml --check

@@ -1,0 +1,10 @@
+---
+- name: Deploy Playbook Principal Teste
+  hosts: localhost
+  gather_facts: true
+  
+  vars:
+     #http_port: 90
+     
+  roles:
+    - teste

@@ -1,0 +1,12 @@
+
+# Segurança em nível de Pods
+---
+apiVersion: v1
+kind: Pod
+spec:
+  #segurança aplicada a todos os conteineires deste Pod
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: false
+    allowPrivilegeEscalation: false  
+...

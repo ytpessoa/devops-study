@@ -1,0 +1,27 @@
+---
+- include_tasks: "preflight.yaml"
+  tags: always
+
+- include_tasks: "kubernetes_auth.yaml"
+  when: kubectl_context_name|default('', true) != ''
+  tags: always
+
+- include_tasks: "{{ task }}"
+  with_items:
+    - kubernetes_auth.yaml
+    - namespaces.yaml
+    - rbac.yaml
+    - kubergrunt.yaml
+  loop_control:
+    loop_var: task
+  tags: ['never', 'install-kubergrunt']
+
+- include_tasks: "{{ task }}"
+  with_items:
+    - kubernetes_auth.yaml
+    - kubergrunt.yaml
+    - rbac.yaml
+    - namespaces.yaml
+  loop_control:
+    loop_var: task
+  tags: ['never', 'uninstall-kubergrunt']

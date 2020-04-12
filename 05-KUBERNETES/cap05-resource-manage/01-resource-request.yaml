@@ -1,0 +1,15 @@
+# Resoure-Request
+---
+
+spec:
+  containeres:
+  - name: demo
+    image: cloudnatived/demo:hello
+    ports:
+    - containerPort: 8888
+    resources:
+      request:
+        memory: "10Mi"
+        cpu: "100m"
+
+

@@ -1,0 +1,25 @@
+# LimitRange: Apenas como garantia.
+# Especifique limite de recursos no próprio conteiner
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: demo-limitrange # any value
+spec:
+  limits:
+  - default:
+      cpu: "500m"
+      memory: "256Mi"
+    defaultRequest:
+      cpu: "200m"
+      memory: "128Mi"
+    type: Container
+...
+
+# Apply to a specific namespace:
+kubectl apply -f 05-LimitRange.yaml -n demo
+#limitrange/demo-limitrange created
+kubectl get limitrange -n demo
+# NAME              CREATED AT
+# demo-limitrange   2020-04-03T16:25:28Z

@@ -1,0 +1,15 @@
+#Resource Limit
+
+
+
+spec:
+  containeres:
+  - name: demo
+    image: cloudnatived/demo:hello
+    ports:
+    - containerPort: 8888
+    resources:
+      limits:
+        memory: "20Mi"
+        cpu: "250m"
+

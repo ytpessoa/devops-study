@@ -1,0 +1,9 @@
+
+# Comandos dentro do  conteiner
+kubectl run busybox --image busybox:1.28 --rm -it --restart=Never /bin/sh
+#If you don't see a
+ ps aux
+ hostname
+
+kubectl delete pods busybox
+#pod "busybox" deleted

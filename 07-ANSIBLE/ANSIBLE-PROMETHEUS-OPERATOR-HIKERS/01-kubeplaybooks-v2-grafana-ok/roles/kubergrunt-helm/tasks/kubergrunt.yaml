@@ -1,0 +1,183 @@
+---
+- name: Kubergrunt Server Deploy
+  shell: >
+      kubergrunt helm deploy
+      --tiller-namespace {{ config.0.tiller_namespace }}
+      --resource-namespace {{ config.0.resource_namespace }}
+      --tls-common-name {{ tls_common_name }}
+      --tls-org {{ tls_org }}
+      --client-tls-common-name {{ client_tls_common_name }}
+      --client-tls-org {{ client_tls_org }}
+      {% if tiller_image|default('', true) != '' %}
+      --tiller-image {{ tiller_image }}
+      {% endif %}
+      {% if tiller_version|default('', true) != '' %}
+      --tiller-version {{ tiller_version }}
+      {% endif %}
+      {% if config.0.service_account|default('', true) != '' %}
+      --service-account {{ config.0.service_account }}
+      {% else %}
+      --service-account service-account-{{ config.0.tiller_namespace }}
+      {% endif %}
+      {% if tls_org_unit|default('', true) != '' %}
+      --tls-org-unit {{ tls_org_unit }}
+      {% endif %}
+      {% if tls_org_city|default('', true) != '' %}
+      --tls-city {{ tls_city }}
+      {% endif %}
+      {% if tls_state|default('', true) != '' %}
+      --tls-state {{ tls_state }}
+      {% endif %}
+      {% if tls_country|default('', true) != '' %}
+      --tls-country {{ tls_country }}
+      {% endif %}
+      {% if client_tls_org_unit|default('', true) != '' %}
+      --client-tls-org-unit {{ client_tls_org_unit }}
+      {% endif %}
+      {% if client_tls_org_city|default('', true) != '' %}
+      --client-tls-city {{ client_tls_city }}
+      {% endif %}
+      {% if client_tls_state|default('', true) != '' %}
+      --client-tls-state {{ client_tls_state }}
+      {% endif %}
+      {% if client_tls_country|default('', true) != '' %}
+      --client-tls-country {{ client_tls_country }}
+      {% endif %}
+      {% if tls_validity|default('', true) != '' %}
+      --tls-validity {{ tls_validity }}
+      {% endif %}
+      {% if tls_private_key_algorithm|default('', true) != '' %}
+      --tls-private-key-algorithm {{ tls_private_key_algorithm }}
+      {% endif %}
+      {% if tls_private_key_ecdsa_curve|default('', true) != '' %}
+      --tls-private-key-ecdsa-curve {{ tls_private_key_ecdsa_curve }}
+      {% endif %}
+      {% if tls_private_key_rsa_bits|default('', true) != '' %}
+      --tls-private-key-rsa-bits {{ tls_private_key_rsa_bits }}
+      {% endif %}
+      {% if config.1.kind == 'User' %}
+      --rbac-user {{config.1.name }}
+      {% elif config.1.kind == 'Group' %}
+      --rbac-group {{ config.1.name }}
+      {% elif config.1.kind == 'ServiceAccount' %}
+      --rbac-service-account {{ config.1.name }}
+      {% endif %}
+      {% if helm_home|default('', true) != '' %}
+      --helm-home {{ helm_home }}
+      {% else %}
+      --helm-home {{ lookup('env','HELM_HOME')|default('~/.helm', true) }}
+      {% endif %}
+      {% if not use_kubeconfig %}
+      --kubectl-server-endpoint {{ kube_server_endpoint }}
+      --kubectl-certificate-authority {{ kubectl_certificate_authority }}
+      --kubectl-token {{ kubectl_token }}
+      {% endif %}
+      {% if use_kubeconfig and kubeconfig|default('', true) != '' %}
+      --kubeconfig {{ kubeconfig }}
+      {% else %}
+      --kubeconfig {{ lookup('env','KUBECONFIG')|default('~/.kube/config', true) }}
+      {% endif %}
+      {% if use_kubeconfig and kubectl_context_name|default('', true) != '' %}
+        --kubectl-context-name {{kubectl_context_name }}
+      {% endif %}
+      {% if wait_for_tiller|default('true', true) == 'true' %}
+      kubergrunt helm wait-for-tiller
+      --tiller-namespace {{ config.0.tiller_namespace }}
+      {% if tiller_image|default('', true) != '' %}
+      --expected-tiller-image {{ tiller_image }}
+      {% endif %}
+      {% if tiller_image|default('', true) != '' %}
+      --expected-tiller-version  {{ tiller_version }}
+      {% endif %}
+      {% if wait_for_tiller_timeout|default('', true) != '' %}
+      --timeout {{ wait_for_tiller_timeout }}
+      {% endif %}
+      {% if wait_for_tiller_sleep_between_retries|default('', true) != '' %}
+      --sleep-between-retries {{wait_for_tiller_sleep_between_retries}}
+      {% endif %}
+      {% endif %}
+  loop: "{{ tiller_configs|subelements('grants') }}"
+  loop_control:
+    loop_var: config
+  tags: ["never", "install-kubergrunt"]
+
+# - name: Kubergrunt Server Revoke
+#   ignore_errors: yes
+#   shell: >      
+#       kubergrunt helm revoke
+#       --tiller-namespace {{ config.0.tiller_namespace }}                 
+#       --rbac-user {{config.1.name }}                
+#   loop: "{{ tiller_configs|subelements('grants') }}"
+#   loop_control:
+#     loop_var: config
+#   tags: ["never", "uninstall-kubergrunt"]
+
+- name: Kubergrunt Server Undeploy
+  ignore_errors: yes
+  shell: >
+      kubergrunt helm configure
+      --tiller-namespace {{ config.tiller_namespace }}
+      --resource-namespace {{ config.resource_namespace }}
+      {% if config.helm_user_for_undeploy_tiller.kind == 'User' %}
+      --rbac-user {{config.helm_user_for_undeploy_tiller.name }}
+      {% elif config.helm_user_for_undeploy_tiller.kind == 'Group' %}
+      --rbac-group {{ config.helm_user_for_undeploy_tiller.name }}
+      {% elif config.helm_user_for_undeploy_tiller.kind == 'ServiceAccount' %}
+      --rbac-service-account {{ config.helm_user_for_undeploy_tiller.name }}
+      {% endif %}
+      {% if helm_home|default('', true) != '' %}
+      --helm-home {{ helm_home }}
+      {% else %}
+      --helm-home {{ lookup('env','HELM_HOME')|default('~/.helm', true) }}
+      {% endif %}
+      {% if not use_kubeconfig != '' %}
+      --kubectl-server-endpoint {{ kube_server_endpoint }}
+      --kubectl-certificate-authority {{ kubectl_certificate_authority }}
+      --kubectl-token {{ kubectl_token }}
+      {% endif %}
+      {% if use_kubeconfig and kubeconfig|default('', true) != '' %}
+      --kubeconfig {{ kubeconfig }} 
+      {% else %}
+      --kubeconfig {{ lookup('env','KUBECONFIG')|default('~/.kube/config', true) }}
+      {% endif %}
+      {% if use_kubeconfig and kubectl_context_name|default('', true) != '' %}
+        --kubectl-context-name {{kubectl_context_name }}
+      {% endif %}
+      . {{ lookup('env','HELM_HOME')|default('~/.helm', true) }}/env
+      &&
+      kubergrunt helm undeploy
+      --tiller-namespace {{ config.tiller_namespace }}
+      {% if helm_home|default('', true) != '' %}
+      --helm-home {{ helm_home }}
+      {% else %}
+      --helm-home {{ lookup('env','HELM_HOME')|default('~/.helm', true) }}
+      {% endif %}
+      {% if not use_kubeconfig != '' %}
+      --kubectl-server-endpoint {{ kube_server_endpoint }}
+      --kubectl-certificate-authority {{ kubectl_certificate_authority }}
+      --kubectl-token {{ kubectl_token }}
+      {% endif %}
+      {% if use_kubeconfig and kubeconfig|default('', true) != '' %}
+      --kubeconfig {{ kubeconfig }} 
+      {% else %}
+      --kubeconfig {{ lookup('env','KUBECONFIG')|default('~/.kube/config', true) }}
+      {% endif %}
+      {% if use_kubeconfig and kubectl_context_name|default('', true) != '' %}
+      --kubectl-context-name {{kubectl_context_name }}
+      {% endif %}
+      {% if undeploy_force|default('false', true) != 'false' %}
+      --force
+      {% endif %}
+      {% if undeploy_releases |default('false', true) != 'false' %}
+      --undeploy-releases
+      {% endif %}
+  loop: "{{ tiller_configs }}"
+  loop_control:
+    loop_var: config
+  tags: ["never", "uninstall-kubergrunt"]
+
+# - name: Delete CA Certs
+#   ignore_errors: yes
+#   shell: >
+#     kubectl delete secret $(kubectl get secrets -n kube-system | grep namespace-tiller-ca-certs | awk '{print $1}') -n kube-system
+#   tags: ["never", "uninstall-kubergrunt"]

@@ -1,0 +1,9 @@
+#Exemplo de uma aplicação conteinerizada: servidor HTTP
+# Senão reponder com HTTP 2xxx ou 3xxx, o conteiner será reiniciado
+
+livenessProbe:
+  httpGet: #probe para verificação do K8s: há outros tipos
+    path: /healthz # K8s envia requests para endpoint da aplicação: uma página
+    port: 8888
+  initiaDelaySeconds: 3 #esperar 3s pra aplicação subir: evitar laço da morte
+  periodSeconds: 3 #K8s envia requests a cada 3s

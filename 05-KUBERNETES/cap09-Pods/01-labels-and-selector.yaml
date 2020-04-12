@@ -1,0 +1,31 @@
+
+# recurso Service
+---
+apiVersion: v1
+kind: Service
+#...
+spec: 
+  #...
+  selector:
+    app: demo # label do Pod para o qual esse Service enviará requisições
+...
+
+# recurso Pod
+---
+apiVersion: v1
+kind: Pod 
+metadata: 
+  labels:
+    app: demo # label
+...
+
+
+# Usando "Labels" para consultar o cluster:
+kubectl get pods -all-namespaces --selector app=demo
+kubectl get pods --show-labels
+kubectl get pods -l app=demo, environment=production #dois labels
+kubectl get pods -l app!=demo #não igualdade  
+kubectl get pods -l environment in (staging, production )
+
+
+
